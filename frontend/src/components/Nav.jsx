@@ -23,11 +23,6 @@ function Nav() {
   let dispatch = useDispatch()
   let {userData, notifications} = useSelector(state=>state.user)
 
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-=======
-=======
->>>>>>> Stashed changes
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -37,10 +32,6 @@ function Nav() {
     }
   };
 
-<<<<<<< Updated upstream
->>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
-=======
->>>>>>> Stashed changes
   useEffect(() => {
     if (userData) {
       fetchNotifications();
@@ -139,27 +130,13 @@ function Nav() {
   return (
     <div onClick={closeDropdown}>
       <div className='w-[100%] h-[90px] fixed top-0 px-[20px] py-[10px] flex items-center justify-between bg-[#00000047]  z-[100]'>
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-        <div className='lg:w-[20%] w-[40%] lg:pl-[50px] '>
-          <img src={logo} className=' w-[80px] h-[80px] rounded-[5px] border-2 border-white cursor-pointer' onClick={() => navigate("/")} alt="SkillSphere Logo" />
-
-=======
         <div className='lg:w-[20%] w-[40%] lg:pl-[50px] flex items-center gap-6'>
           <img src={logo} className=' w-[80px] h-[80px] rounded-[5px] border-2 border-white cursor-pointer' onClick={() => navigate("/")} alt="SkillSphere Logo" />
-=======
-        <div className='lg:w-[20%] w-[40%] lg:pl-[50px] flex items-center gap-6'>
-          <img src={logo} className=' w-[80px] h-[80px] rounded-[5px] border-2 border-white cursor-pointer' onClick={() => navigate("/")} alt="SkillSphere Logo" />
->>>>>>> Stashed changes
           <div className='hidden lg:flex items-center gap-4'>
             <span className='text-white cursor-pointer hover:text-gray-300 transition-colors' onClick={() => scrollToSection('explore-courses')}>Home</span>
             <span className='text-white cursor-pointer hover:text-gray-300 transition-colors' onClick={() => scrollToSection('about-us')}>AboutUs</span>
             <span className='text-white cursor-pointer hover:text-gray-300 transition-colors' onClick={() => scrollToSection('contact-us')}>ContactUs</span>
           </div>
-<<<<<<< Updated upstream
->>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
-=======
->>>>>>> Stashed changes
         </div>
 
         <div className='w-[30%] lg:flex items-center justify-center gap-4 hidden'>
@@ -280,12 +257,4 @@ function Nav() {
   )
 }
 
-<<<<<<< Updated upstream
-<<<<<<< HEAD
 export default Nav
-=======
-export default Nav
->>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
-=======
-export default Nav
->>>>>>> Stashed changes
