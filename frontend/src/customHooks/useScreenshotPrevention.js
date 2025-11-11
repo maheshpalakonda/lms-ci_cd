@@ -46,7 +46,11 @@ const useScreenshotPrevention = (lectureId = null) => {
               // ignore logout errors
             }
             // Redirect to login page to clear frontend state
+<<<<<<< HEAD
             window.location.replace('/login');
+=======
+            window.location.replace('/');
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
           }, 1400);
         } catch (err) {
           // reporting failed; still log error but don't force logout
@@ -69,7 +73,11 @@ const useScreenshotPrevention = (lectureId = null) => {
               // ignore logout errors
             }
             // Redirect to login page to clear frontend state
+<<<<<<< HEAD
             window.location.replace('/login');
+=======
+            window.location.replace('/');
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
           }, 1400);
         } catch (err) {
           // reporting failed; still log error but don't force logout
@@ -96,6 +104,7 @@ const useScreenshotPrevention = (lectureId = null) => {
         showWarning('Printing is disabled.');
       }
       // Prevent Ctrl+S (Save Page)
+<<<<<<< HEAD
       if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
         showWarning('Saving is disabled.');
@@ -110,6 +119,22 @@ const useScreenshotPrevention = (lectureId = null) => {
         e.preventDefault();
         showWarning('Inspecting elements is disabled.');
       }
+=======
+      // if (e.ctrlKey && e.key === 's') {
+      //   e.preventDefault();
+      //   showWarning('Saving is disabled.');
+      // }
+      // // Prevent Ctrl+U (View Source)
+      // if (e.ctrlKey && e.key === 'u') {
+      //   e.preventDefault();
+      //   showWarning('Viewing source is disabled.');
+      // }
+      // // Prevent Ctrl+Shift+I (Inspect Element)
+      // if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+      //   e.preventDefault();
+      //   showWarning('Inspecting elements is disabled.');
+      // }
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
       // Prevent F12 (Developer Tools)
       if (e.key === 'F12') {
         e.preventDefault();
@@ -185,7 +210,11 @@ const useScreenshotPrevention = (lectureId = null) => {
     };
 
     // Add event listeners to window for better capture
+<<<<<<< HEAD
     window.addEventListener('contextmenu', handleContextMenu);
+=======
+    //window.addEventListener('contextmenu', handleContextMenu);
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('selectstart', handleSelectStart);
@@ -245,7 +274,11 @@ const useScreenshotPrevention = (lectureId = null) => {
 
     // Cleanup on unmount
     return () => {
+<<<<<<< HEAD
       window.removeEventListener('contextmenu', handleContextMenu);
+=======
+      //window.removeEventListener('contextmenu', handleContextMenu);
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('selectstart', handleSelectStart);

@@ -4,22 +4,41 @@ services:
   backend:
     build:
       context: ./backend
+<<<<<<< HEAD
       dockerfile: ../Dockerfile.backend
     container_name: lms-backend
     ports:
       - "8000:8000"  # host:container
     env_file:
       - ./backend/.env
+=======
+      dockerfile: ./backend/Dockerfile.backend
+    image: mahesh1925/lms-backend:latest
+    container_name: lms-backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
     restart: always
     networks:
       - lms-network
     extra_hosts:
+<<<<<<< HEAD
       - "host.docker.internal:host-gateway"   # allows container to access host MongoDB
+=======
+      - "host.docker.internal:host-gateway"
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
 
   frontend:
     build:
       context: ./frontend
+<<<<<<< HEAD
       dockerfile: Dockerfile.frontend
+=======
+      dockerfile: ./frontend/Dockerfile.frontend
+    image: mahesh1925/lms-frontend:latest
+>>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
     container_name: lms-frontend
     ports:
       - "8082:80"
