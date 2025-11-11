@@ -1,84 +1,73 @@
-import React, { useEffect } from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { ToastContainer } from 'react-toastify'
-import axios from 'axios'
+import React, { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import axios from 'axios';
 
-import Home from './pages/Home'
-import Login from './pages/Login'
-import SignUp from './pages/SignUp'
-import Profile from './pages/Profile'
-import EditProfile from './pages/EditProfile'
-import Dashboard from './pages/admin/Dashboard'
-import Courses from './pages/admin/Courses'
-import AllCouses from './pages/AllCouses'
-import AddCourses from './pages/admin/AddCourses'
-import CreateCourse from './pages/admin/CreateCourse'
-import CreateLecture from './pages/admin/CreateLecture'
-import EditLecture from './pages/admin/EditLecture'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import UserManagement from './pages/admin/UserManagement'
-import SystemSettings from './pages/admin/SystemSettings'
-import LiveStream from './components/LiveStream'
-import Chatbot from './components/ChatBot'
-import ViewCourse from './pages/ViewCourse'
-import EnrolledCourse from './pages/EnrolledCourse'
-import ViewLecture from './pages/ViewLecture'
-import SearchWithAi from './pages/SearchWithAi'
-import Wishlist from './pages/Wishlist'
-import Notifications from './pages/Notifications'
-import ForgotPassword from './pages/ForgotPassword'
-import AuthCallback from './pages/AuthCallback'
+import Home from './pages/Home';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import Dashboard from './pages/admin/Dashboard';
+import Courses from './pages/admin/Courses';
+import AllCouses from './pages/AllCouses';
+import AddCourses from './pages/admin/AddCourses';
+import CreateCourse from './pages/admin/CreateCourse';
+import CreateLecture from './pages/admin/CreateLecture';
+import EditLecture from './pages/admin/EditLecture';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import SystemSettings from './pages/admin/SystemSettings';
+import LiveStream from './components/LiveStream';
+import Chatbot from './components/ChatBot';
+import ViewCourse from './pages/ViewCourse';
+import EnrolledCourse from './pages/EnrolledCourse';
+import ViewLecture from './pages/ViewLecture';
+import SearchWithAi from './pages/SearchWithAi';
+import Wishlist from './pages/Wishlist';
+import Notifications from './pages/Notifications';
+import ForgotPassword from './pages/ForgotPassword';
+import AuthCallback from './pages/AuthCallback';
 
-import ScrollToTop from './components/ScrollToTop'
-import { setUserData } from './redux/userSlice'
-import './customHooks/useScreenshotPrevention'
-import './utils/axiosSetup'
-import useScreenshotPrevention from './customHooks/useScreenshotPrevention'
+import ScrollToTop from './components/ScrollToTop';
+import { setUserData } from './redux/userSlice';
+import './customHooks/useScreenshotPrevention';
+import './utils/axiosSetup';
+import useScreenshotPrevention from './customHooks/useScreenshotPrevention';
 
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-//export const serverUrl = "http://localhost:8000"
-export const serverUrl = "http://72.60.219.208:8000"
-=======
-// export const serverUrl = "http://localhost:8000"
-// export const serverUrl = "http://72.60.219.208:8000"
+// ✅ Use production API endpoint
 export const serverUrl = "https://techsproutlms.com";
-
->>>>>>> 4e6ce7a45afa8ab3cf2e653b38e91acc23b187bf
-=======
-export const serverUrl = "http://localhost:8000"
-// export const serverUrl = "http://72.60.219.208:8000"
->>>>>>> Stashed changes
-
+// For local testing, use:
+// export const serverUrl = "http://localhost:8000";
 
 function App() {
-  const dispatch = useDispatch()
-  const location = useLocation()
-  const { userData, isFetchingUser } = useSelector(state => state.user)
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { userData, isFetchingUser } = useSelector(state => state.user);
 
-  useScreenshotPrevention()
+  useScreenshotPrevention();
 
   // Fetch current user
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(serverUrl + '/api/user/currentuser', { withCredentials: true })
-        dispatch(setUserData(res.data?.user || res.data))
+        const res = await axios.get(serverUrl + '/api/user/currentuser', { withCredentials: true });
+        dispatch(setUserData(res.data?.user || res.data));
       } catch (err) {
-        dispatch(setUserData(null))
+        dispatch(setUserData(null));
       }
-    }
-    fetchUser()
-  }, [dispatch])
+    };
+    fetchUser();
+  }, [dispatch]);
 
-  // Prevent white page while fetching user
   if (isFetchingUser) {
-    return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>
+    return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>;
   }
 
-  // Detect if current page is a course/lecture page
-  const isCoursePage = location.pathname.startsWith("/viewcourse") || location.pathname.startsWith("/viewlecture")
+  const isCoursePage =
+    location.pathname.startsWith("/viewcourse") ||
+    location.pathname.startsWith("/viewlecture");
 
   return (
     <>
@@ -98,7 +87,7 @@ function App() {
         <Route path='/forgotpassword' element={<ForgotPassword />} />
         <Route path='/auth/callback' element={<AuthCallback />} />
 
-        {/* Protected student routes */}
+        {/* Student routes */}
         <Route path='/profile' element={userData ? <Profile /> : <Navigate to='/login' />} />
         <Route path='/editprofile' element={userData ? <EditProfile /> : <Navigate to='/login' />} />
         <Route path='/allcourses' element={userData ? <AllCouses /> : <Navigate to='/login' />} />
@@ -124,8 +113,8 @@ function App() {
         <Route path='/admin/settings' element={userData?.role === 'admin' ? <SystemSettings /> : <Navigate to='/login' />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
 
