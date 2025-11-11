@@ -5,6 +5,8 @@ import axios from '../../utils/axiosSetup'; // Assuming you have this for API ca
 const AdminDashboard = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
+  const [users, setUsers] = useState([]);
+  const [showUsers, setShowUsers] = useState(false);
 
   // In a real application, you would fetch the courses from your API
   useEffect(() => {
@@ -27,10 +29,52 @@ const AdminDashboard = () => {
     fetchCourses();
   }, []);
 
+  const fetchUsers = async () => {
+    try {
+      const { data } = await axios.get('/api/users');
+      setUsers(data.users);
+    } catch (error) {
+      console.error("Failed to fetch users", error);
+      // Mock data for demonstration
+      setUsers([
+        { _id: '1', name: 'John Doe', email: 'john@example.com' },
+        { _id: '2', name: 'Jane Smith', email: 'jane@example.com' }
+      ]);
+    }
+  };
+
+  const handleUsersClick = () => {
+    if (!showUsers && users.length === 0) {
+      fetchUsers();
+    }
+    setShowUsers(!showUsers);
+  };
+
   return (
     <div className="admin-dashboard p-6">
       <h1>Admin Dashboard</h1>
       <p>Welcome to the Admin Panel. This is the overview page.</p>
+
+      <div className="mt-8">
+        <button
+          onClick={handleUsersClick}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        >
+          Users
+        </button>
+        {showUsers && (
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold mb-4">Users List</h2>
+            <ul className="list-disc pl-5">
+              {users.map(user => (
+                <li key={user._id} className="mb-2">
+                  <strong>{user.name}</strong> - {user.email}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Upload a Video to a Course</h2>
