@@ -1,63 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import VideoUpload from '../../components/VideoUpload';
-import axios from '../../utils/axiosSetup'; // Assuming you have this for API calls
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { serverUrl } from "../../App";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
-  const [courses, setCourses] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [students, setStudents] = useState([]);
+  const [educators, setEducators] = useState([]);
 
-  // In a real application, you would fetch the courses from your API
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        // This is a placeholder. You should have an endpoint to get courses created by the educator.
-        const { data } = await axios.get('/api/courses/my-courses'); // Example endpoint
-        setCourses(data.courses);
-        if (data.courses.length > 0) {
-          setSelectedCourse(data.courses[0]._id); // Select the first course by default
-        }
-      } catch (error) {
-        console.error("Failed to fetch courses", error);
-        // Mock data for demonstration if the API call fails
-        setCourses([{ _id: 'mock-course-1', title: 'Mock Course 1' }, { _id: 'mock-course-2', title: 'Mock Course 2' }]);
-        setSelectedCourse('mock-course-1');
+  // ✅ Fetch all users and separate tables
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/admin/users`, {
+        withCredentials: true,
+      });
+
+      const data = res.data;
+
+      setStudents(data.filter((u) => u.role === "student"));
+      setEducators(data.filter((u) => u.role === "educator"));
+    } catch (err) {
+      toast.error("Failed to fetch users");
+    }
+  };
+
+  // ✅ Toggle status instantly without UI lag
+  const handleToggleStatus = async (userId, role) => {
+    try {
+      const res = await axios.put(
+        `${serverUrl}/api/admin/toggle/${userId}`,
+        {},
+        { withCredentials: true }
+      );
+
+      toast.success(res.data.message);
+
+      if (role === "student") {
+        setStudents((prev) =>
+          prev.map((u) =>
+            u._id === userId
+              ? { ...u, status: u.status === "active" ? "inactive" : "active" }
+              : u
+          )
+        );
+      } else if (role === "educator") {
+        setEducators((prev) =>
+          prev.map((u) =>
+            u._id === userId
+              ? { ...u, status: u.status === "active" ? "inactive" : "active" }
+              : u
+          )
+        );
       }
-    };
+    } catch (err) {
+      toast.error("Error updating user status");
+    }
+  };
 
-    fetchCourses();
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
-  return (
-    <div className="admin-dashboard p-6">
-      <h1>Admin Dashboard</h1>
-      <p>Welcome to the Admin Panel. This is the overview page.</p>
+  // -----------------------------------------
+  // REUSABLE TABLE COMPONENT
+  // -----------------------------------------
+  const UserTable = ({ title, users, role }) => (
+    <div className="mt-10">
+      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
 
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Upload a Video to a Course</h2>
-        <div className="mb-4">
-          <label htmlFor="course-select" className="block text-sm font-medium text-gray-700 mb-2">Select a Course:</label>
-          <select
-            id="course-select"
-            value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-black focus:outline-none"
-          >
-            {courses.map(course => (
-              <option key={course._id} value={course._id}>
-                {course.title}
-              </option>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Email</th>
+              <th className="p-2 border">Last Login</th>
+              <th className="p-2 border">Status</th>
+              <th className="p-2 border">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {users.map((u) => (
+              <tr key={u._id}>
+                <td className="p-2 border">{u.name}</td>
+                <td className="p-2 border">{u.email}</td>
+                <td className="p-2 border">
+                  {new Date(u.lastLogin).toLocaleDateString()}
+                </td>
+
+                <td
+                  className={`p-2 border font-semibold ${
+                    u.status === "active"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {u.status}
+                </td>
+
+                <td className="p-2 border">
+                  <button
+                    onClick={() => handleToggleStatus(u._id, role)}
+                    className={`px-3 py-1 rounded ${
+                      u.status === "active"
+                        ? "bg-red-500 text-white"
+                        : "bg-green-500 text-white"
+                    }`}
+                  >
+                    {u.status === "active"
+                      ? "Set Inactive"
+                      : "Set Active"}
+                  </button>
+                </td>
+              </tr>
             ))}
-          </select>
-        </div>
-        {selectedCourse ? (
-          <VideoUpload courseId={selectedCourse} />
-        ) : (
-          <p>Please select a course to upload a video.</p>
-        )}
+          </tbody>
+        </table>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="p-6">
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+
+      {/* Student Table */}
+      <UserTable
+        title="Student List"
+        users={students}
+        role="student"
+      />
+
+      {/* Educator Table */}
+      <UserTable
+        title="Educator List"
+        users={educators}
+        role="educator"
+      />
     </div>
   );
 };
 
 export default AdminDashboard;
-
