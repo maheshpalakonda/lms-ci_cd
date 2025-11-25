@@ -69,6 +69,17 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null
     }
+    ,
+    // Track last login time for activity checks
+    lastLoginAt: {
+      type: Date,
+      default: null
+    },
+    // Allow admin to mark users active/inactive
+    isActive: {
+      type: Boolean,
+      default: true
+    }
 
   },
   { timestamps: true }

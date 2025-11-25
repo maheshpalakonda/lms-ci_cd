@@ -58,7 +58,18 @@ export const login=async(req,res)=>{
             return res.status(400).json({message:"incorrect Password"})
         }
         let token =await genToken(user._id)
-        res.cookie("token",token,{
+                // Update lastLoginAt on successful login
+                try {
+                    user.lastLoginAt = Date.now()
+                    // If user was previously deactivated, do not automatically reactivate unless desired.
+                    // We'll keep isActive as-is here, but ensure it exists for older docs.
+                    if (typeof user.isActive === 'undefined') user.isActive = true
+                    await user.save()
+                } catch (e) {
+                    console.warn('Failed to update lastLoginAt:', e)
+                }
+
+                res.cookie("token",token,{
             httpOnly:true,
             secure:false,
             sameSite: "Lax",
@@ -99,7 +110,16 @@ export const googleSignup = async (req,res) => {
             name , email ,role
         })
         }
-        let token =await genToken(user._id)
+                // Update lastLoginAt and ensure isActive exists
+                try {
+                    user.lastLoginAt = Date.now()
+                    if (typeof user.isActive === 'undefined') user.isActive = true
+                    await user.save()
+                } catch (e) {
+                    console.warn('Failed to update lastLoginAt for googleSignup:', e)
+                }
+
+                let token =await genToken(user._id)
         res.cookie("token",token,{
             httpOnly:true,
             secure:false,
@@ -236,8 +256,17 @@ export const googleTokenExchange = async (req,res) => {
         // Generate JWT token
         const token = await genToken(user._id);
 
-        // Set cookie
-        res.cookie("token", token, {
+                // Update lastLoginAt and ensure isActive exists
+                try {
+                    user.lastLoginAt = Date.now()
+                    if (typeof user.isActive === 'undefined') user.isActive = true
+                    await user.save()
+                } catch (e) {
+                    console.warn('Failed to update lastLoginAt for googleTokenExchange:', e)
+                }
+
+                // Set cookie
+                res.cookie("token", token, {
             httpOnly: true,
             secure: false,
             sameSite: "Strict",
