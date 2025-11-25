@@ -1,4 +1,3 @@
-// test change
 import { uploadFileToS3, deleteFileFromS3 } from "../configs/awsS3.js";
 import { v4 as uuidv4 } from "uuid";
 import Course from "../models/courseModel.js";
@@ -275,5 +274,37 @@ export const checkEnrollment = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Failed to check enrollment ${error}` });
+  }
+};
+export const enrollCourse = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const userId = req.userId;  // you use req.userId in other functions, not req.user._id
+
+    const user = await User.findById(userId);
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // ❌ Already enrolled?
+    if (user.enrolledCourses.includes(courseId)) {
+      return res.status(400).json({ message: "Already enrolled" });
+    }
+
+    // ⭐ 1. Add course to student's profile
+    user.enrolledCourses.push(courseId);
+    await user.save();
+
+    // ⭐ 2. Add student to course's enrolledStudents
+    course.enrolledStudents.push(userId);
+    await course.save();
+
+    return res.status(200).json({ message: "Enrolled successfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
