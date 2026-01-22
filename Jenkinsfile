@@ -7,15 +7,14 @@ pipeline {
     }
 
     environment {
-        COMPOSE_FILE     = 'docker-compose.yml'
-        DOCKER_HUB_USER  = 'mahesh1925'
-        BACKEND_IMAGE    = 'mahesh1925/lms-backend'
-        FRONTEND_IMAGE   = 'mahesh1925/lms-frontend'
+        COMPOSE_FILE    = 'docker-compose.yml'
+        BACKEND_IMAGE   = 'mahesh1925/lms-backend'
+        FRONTEND_IMAGE  = 'mahesh1925/lms-frontend'
     }
 
     stages {
 
-        /* Checkout code */
+        /* 1️⃣ Checkout Code */
         stage('Checkout Code') {
             steps {
                 git branch: 'master',
@@ -24,7 +23,7 @@ pipeline {
             }
         }
 
-        /* Build Docker images */
+        /* 2️⃣ Build Docker Images */
         stage('Build Docker Images') {
             steps {
                 sh '''
@@ -35,7 +34,7 @@ pipeline {
             }
         }
 
-        /* Push images to Docker Hub */
+        /* 3️⃣ Push Images to Docker Hub */
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([
@@ -58,7 +57,7 @@ pipeline {
             }
         }
 
-        /* OLD Deploy Stage (uses sudo + .env files) */
+        /* 4️⃣ Deploy Containers – OPTION 3 */
         stage('Deploy Containers') {
             steps {
                 withCredentials([
@@ -66,19 +65,15 @@ pipeline {
                     file(credentialsId: 'frontend-env', variable: 'FRONTEND_ENV')
                 ]) {
                     sh '''
-                        echo "🧩 Deploying containers (OLD WAY)..."
+                        echo "🧩 Deploying containers (Option 3)..."
 
-                        mkdir -p /app/lms || sudo mkdir -p /app/lms
-
-                        cp $BACKEND_ENV backend/.env || sudo cp $BACKEND_ENV backend/.env
-                        cp $FRONTEND_ENV frontend/.env || sudo cp $FRONTEND_ENV frontend/.env
-
-                        docker rm -f lms-backend lms-frontend || true
+                        export BACKEND_ENV=$BACKEND_ENV
+                        export FRONTEND_ENV=$FRONTEND_ENV
 
                         docker compose -f ${COMPOSE_FILE} down || true
-                        docker compose -f ${COMPOSE_FILE} up -d --force-recreate
+                        docker compose -f ${COMPOSE_FILE} up -d --force-recreate --remove-orphans
 
-                        echo "✅ Deployment completed"
+                        echo "✅ Deployment completed successfully!"
                     '''
                 }
             }
@@ -90,7 +85,7 @@ pipeline {
             echo "✅ Build & Deployment succeeded!"
         }
         failure {
-            echo "❌ Build Failed"
+            echo "❌ Build Failed — Check Jenkins Logs."
         }
     }
 }
