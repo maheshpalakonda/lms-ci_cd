@@ -7,15 +7,15 @@ pipeline {
     }
 
     environment {
-        DOCKER_HUB_USER = 'mahesh1925'
-        BACKEND_IMAGE  = 'mahesh1925/lms-backend'
-        FRONTEND_IMAGE = 'mahesh1925/lms-frontend'
-        COMPOSE_FILE   = 'docker-compose.yml'
+        COMPOSE_FILE     = 'docker-compose.yml'
+        DOCKER_HUB_USER  = 'mahesh1925'
+        BACKEND_IMAGE    = 'mahesh1925/lms-backend'
+        FRONTEND_IMAGE   = 'mahesh1925/lms-frontend'
     }
 
     stages {
 
-        /* 1️⃣ Checkout Source Code */
+        /* Checkout code */
         stage('Checkout Code') {
             steps {
                 git branch: 'master',
@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-        /* 2️⃣ Build Docker Images */
+        /* Build Docker images */
         stage('Build Docker Images') {
             steps {
                 sh '''
@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        /* 3️⃣ Push Images to Docker Hub */
+        /* Push images to Docker Hub */
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([
@@ -49,10 +49,7 @@ pipeline {
                         echo "🔑 Logging into Docker Hub..."
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-                        echo "⬆️ Pushing backend image..."
                         docker push ${BACKEND_IMAGE}:latest
-
-                        echo "⬆️ Pushing frontend image..."
                         docker push ${FRONTEND_IMAGE}:latest
 
                         docker logout
@@ -61,7 +58,7 @@ pipeline {
             }
         }
 
-        /* 4️⃣ Deploy Containers (OPTION 3 – NO sudo, NO env copy) */
+        /* OLD Deploy Stage (uses sudo + .env files) */
         stage('Deploy Containers') {
             steps {
                 withCredentials([
@@ -69,19 +66,19 @@ pipeline {
                     file(credentialsId: 'frontend-env', variable: 'FRONTEND_ENV')
                 ]) {
                     sh '''
-                        echo "🧩 Deploying containers using Docker Compose (Option 3)..."
+                        echo "🧩 Deploying containers (OLD WAY)..."
 
-                        # Export env file paths for docker-compose
-                        export BACKEND_ENV=$BACKEND_ENV
-                        export FRONTEND_ENV=$FRONTEND_ENV
+                        mkdir -p /app/lms || sudo mkdir -p /app/lms
 
-                        echo "♻️ Stopping old containers..."
+                        cp $BACKEND_ENV backend/.env || sudo cp $BACKEND_ENV backend/.env
+                        cp $FRONTEND_ENV frontend/.env || sudo cp $FRONTEND_ENV frontend/.env
+
+                        docker rm -f lms-backend lms-frontend || true
+
                         docker compose -f ${COMPOSE_FILE} down || true
+                        docker compose -f ${COMPOSE_FILE} up -d --force-recreate
 
-                        echo "🚀 Starting new containers..."
-                        docker compose -f ${COMPOSE_FILE} up -d --force-recreate --remove-orphans
-
-                        echo "✅ Deployment completed successfully!"
+                        echo "✅ Deployment completed"
                     '''
                 }
             }
@@ -90,12 +87,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ CI/CD Pipeline completed successfully!"
-            echo "Backend Image: ${BACKEND_IMAGE}:latest"
-            echo "Frontend Image: ${FRONTEND_IMAGE}:latest"
+            echo "✅ Build & Deployment succeeded!"
         }
         failure {
-            echo "❌ Pipeline failed. Check Jenkins logs."
+            echo "❌ Build Failed"
         }
     }
 }
