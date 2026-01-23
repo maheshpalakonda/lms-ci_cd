@@ -34,12 +34,19 @@ pipeline {
                 ]) {
                     sh '''
                         echo "🏗️ Building backend image..."
-                        docker build -t $BACKEND_IMAGE:latest \
+                        docker build \
+                          -t $BACKEND_IMAGE:latest \
                           -f backend/Dockerfile.backend backend
 
-                        echo "🏗️ Building frontend image with Vite build-time envs..."
+                        echo "==============================="
+                        echo "🔍 DEBUG FRONTEND ENV FILE"
+                        echo "==============================="
+                        cat "$FRONTEND_ENV"
+                        echo "==============================="
 
-                        docker build \
+                        echo "🏗️ Building frontend image (NO CACHE, Vite build-time envs)..."
+
+                        docker build --no-cache \
                           --build-arg VITE_GOOGLE_CLIENT_ID=$(grep VITE_GOOGLE_CLIENT_ID "$FRONTEND_ENV" | cut -d= -f2) \
                           --build-arg VITE_FIREBASE_APIKEY=$(grep VITE_FIREBASE_APIKEY "$FRONTEND_ENV" | cut -d= -f2) \
                           --build-arg VITE_API_URL=$(grep VITE_API_URL "$FRONTEND_ENV" | cut -d= -f2) \
