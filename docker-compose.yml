@@ -1,17 +1,20 @@
-version: "3.9"
-
 services:
+
+  # =========================
+  # MongoDB (Internal Only)
+  # =========================
   mongodb:
     image: mongo:6
     container_name: lms-mongodb
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     networks:
       - lms-network
     restart: always
 
+  # =========================
+  # Backend (Node.js / Express)
+  # =========================
   backend:
     image: mahesh1925/lms-backend:latest
     container_name: lms-backend
@@ -25,6 +28,9 @@ services:
       - lms-network
     restart: always
 
+  # =========================
+  # Frontend (Vite + Nginx)
+  # =========================
   frontend:
     image: mahesh1925/lms-frontend:latest
     container_name: lms-frontend
@@ -38,10 +44,16 @@ services:
       - lms-network
     restart: always
 
+# =========================
+# Volumes
+# =========================
+volumes:
+  mongo-data:
+
+# =========================
+# Networks
+# =========================
 networks:
   lms-network:
     driver: bridge
-
-volumes:
-  mongo-data:
 
