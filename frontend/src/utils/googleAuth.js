@@ -16,11 +16,11 @@ class GoogleAuth {
       state: state ? JSON.stringify(state) : undefined
     });
 
-    return https://accounts.google.com/o/oauth2/v2/auth?${params.toString()};
+    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   }
 
   async handleCallback(code) {
-    const response = await fetch(${serverUrl}/api/auth/google/token, {
+    const response = await fetch(`${serverUrl}/api/auth/google/token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -40,3 +40,4 @@ class GoogleAuth {
 }
 
 export default new GoogleAuth();
+
