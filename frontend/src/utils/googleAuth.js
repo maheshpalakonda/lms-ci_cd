@@ -1,8 +1,6 @@
 import { serverUrl } from "../App";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-// const REDIRECT_URI = "http://localhost:5173/auth/callback";
-// const REDIRECT_URI = "https://techsproutlms.com/auth/callback";
 const REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
 const SCOPE = "openid email profile";
 
@@ -18,11 +16,11 @@ class GoogleAuth {
       state: state ? JSON.stringify(state) : undefined
     });
 
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    return https://accounts.google.com/o/oauth2/v2/auth?${params.toString()};
   }
 
   async handleCallback(code) {
-    const response = await fetch(`${serverUrl}/api/auth/google/token`, {
+    const response = await fetch(${serverUrl}/api/auth/google/token, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
